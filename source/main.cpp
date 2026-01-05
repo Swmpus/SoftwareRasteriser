@@ -6,6 +6,21 @@
 #define DISPLAY_HEIGHT 280
 #define DISPLAY_WIDTH 240
 
+bool pointOnRightSideOfLine(const Vec2& a, const Vec2& b, const Vec2& point)
+{
+	Vec2 ap = point - a;
+	Vec2 abPerp = (b - a).perpendicular();
+	return ap.dot(abPerp) >= 0;
+}
+
+bool pointInTriangle(const Vec2& a, const Vec2& b, const Vec2& c, const Vec2& point)
+{
+	bool sideAB = pointOnRightSideOfLine(a, b, point);
+	bool sideBC = pointOnRightSideOfLine(b, c, point);
+	bool sideCA = pointOnRightSideOfLine(c, a, point);
+	return sideAB == sideBC && sideBC == sideCA;
+}
+
 void fileWriteBytes(std::ofstream& file, char* value, int length)
 {
 	file.write(value, length);
@@ -62,11 +77,19 @@ int main()
 {
 	Vec3 image[DISPLAY_HEIGHT][DISPLAY_WIDTH];
 
+	// Initialise a triangle
+	Vec2 a(0.2f * DISPLAY_WIDTH, 0.2f * DISPLAY_HEIGHT);
+	Vec2 b(0.7f * DISPLAY_WIDTH, 0.4f * DISPLAY_HEIGHT);
+	Vec2 c(0.4f * DISPLAY_WIDTH, 0.8f * DISPLAY_HEIGHT);
+
 	for (uint16_t y = 0; y < DISPLAY_HEIGHT; y++) {
 		for (uint16_t x = 0; x < DISPLAY_WIDTH; x++) {
-			image[y][x].x = static_cast<float>(x) / static_cast<float>(DISPLAY_WIDTH - 1);
-			image[y][x].y = static_cast<float>(y) / static_cast<float>(DISPLAY_HEIGHT - 1);
-			image[y][x].z = 0.0f;
+			Vec2 point(static_cast<float>(x), static_cast<float>(y));
+			if (pointInTriangle(a, b, c, point)) {
+				image[y][x].x = 0;
+				image[y][x].y = 0;
+				image[y][x].z = 1;
+			}
 		}
 	}
 	writeBitmap(image, "D:/New Projects/Programming/SoftwareRasteriser/output.bmp");
