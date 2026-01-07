@@ -109,8 +109,9 @@ struct Triangle {
 	Vec3 colour;
 
 	Triangle(Vec2& a, Vec2& b, Vec2& c, Vec3& colour) : a(a), b(b), c(c), colour(colour) {}
+	Triangle() : a(Vec2()), b(Vec2()), c(Vec2()), colour(Vec3()) {}
 
-	bool pointInTriangle(const Vec2& point)
+	bool pointInTriangle(const Vec2& point) const
 	{
 		bool sideAB = pointOnRightSideOfLine(a, b, point);
 		bool sideBC = pointOnRightSideOfLine(b, c, point);
@@ -118,7 +119,7 @@ struct Triangle {
 		return sideAB == sideBC && sideBC == sideCA;
 	}
 
-	bool pointOnRightSideOfLine(const Vec2& a, const Vec2& b, const Vec2& point)
+	bool pointOnRightSideOfLine(const Vec2& a, const Vec2& b, const Vec2& point) const
 	{
 		Vec2 ap = point - a;
 		Vec2 abPerp = (b - a).perpendicular();
