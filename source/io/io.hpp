@@ -1,5 +1,7 @@
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <maths.hpp>
 
 #ifndef DISPLAY_HEIGHT
 #define DISPLAY_HEIGHT 280
@@ -58,4 +60,53 @@ void writeBitmap(Vec3 image[DISPLAY_HEIGHT][DISPLAY_WIDTH], std::string filePath
 		}
 	}
 	outputFile.close();
+}
+
+std::vector<std::string> splitString(const std::string v, const char s)
+{
+	std::stringstream ss(v);
+	std::string split;
+	std::vector<std::string> splits;
+    while (getline(ss, split, s)) {
+    	splits.push_back(split);
+    }
+    return splits;
+}
+
+std::vector<Vec3> readObj(const std::string filePath)
+{
+	std::ifstream file(filePath);
+	std::vector<Vec3> allPoints;
+	std::vector<Vec3> trianglePoints;
+
+	std::string line;
+	while (std::getline(file, line)) {
+    	std::cout << line << std::endl;
+	    if (line.substr(0, 2) == "v ") {
+	    	const auto splits = splitString(line.substr(2, line.size() - 2), ' ');
+		    allPoints.push_back(
+		    	Vec3(
+		    		std::stof(splits[0]),
+		    		std::stof(splits[1]),
+		    		std::stof(splits[2])
+		    		)
+		    	);
+	    } else if (line.substr(0, 2) == "f ") {
+	    	const auto indexGroups = splitString(line.substr(2, line.size() - 2), ' ');
+	    	for (int i = 0; i < indexGroups.size(); i++) {
+	    		const int newIndex = std::stoi(splitString(indexGroups[i], '/')[0]) - 1;  // Face indices start aat 1
+	    		if (i >= 3) {
+	    			trianglePoints.push_back(trianglePoints[trianglePoints.size() - 3]);
+	    			trianglePoints.push_back(trianglePoints[trianglePoints.size() - 2]);
+	    		}
+	    		trianglePoints.push_back(allPoints[newIndex]);
+	    	}
+
+	    	for (const Vec3 p : trianglePoints) {
+	    		std::cout << "(" << p.x << ", " << p.y << ", " << p.z << ")";
+	    	}
+	    	std::cout << std::endl;
+	    }
+	}
+	return trianglePoints;
 }

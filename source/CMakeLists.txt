@@ -7,8 +7,10 @@ add_executable(main
 )
 add_subdirectory(maths)
 add_subdirectory(io)
+add_subdirectory(geometry)
 
 target_link_libraries(main
 	Maths
 	IO
+	Geometry
 )

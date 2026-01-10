@@ -2,6 +2,7 @@
 #include <vector>
 #include "maths.hpp"
 #include "io.hpp"
+#include "geometry.hpp"
 
 #ifndef DISPLAY_HEIGHT
 #define DISPLAY_HEIGHT 280
@@ -41,15 +42,12 @@ void render(const std::vector<Triangle>& tris)
 
 int main()
 {
-	// Initialise a triangle
-	Triangle tri(
-		Vec2(0.3f * DISPLAY_WIDTH, 0.2f * DISPLAY_HEIGHT),
-		Vec2(0.2f * DISPLAY_WIDTH, 0.4f * DISPLAY_HEIGHT),
-		Vec2(0.4f * DISPLAY_WIDTH, 0.8f * DISPLAY_HEIGHT),
-		Vec3(0, 1, 0)
-	);
+	const auto trianglePoints = readObj("D:/New Projects/Programming/SoftwareRasteriser/Resources/Cube.obj");
 
-	std::vector<Triangle> tris(10);
-	tris.push_back(tri);
-	render(tris);
+	std::vector<Vec3> triangleCols;
+	for (int i = 0; i < trianglePoints.size() / 3; i++) {
+		triangleCols.push_back(Vec3(0.0f, 1.0f, 0.0f));
+	}
+
+	Model cube(trianglePoints, triangleCols);
 }
