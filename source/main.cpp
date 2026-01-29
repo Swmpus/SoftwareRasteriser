@@ -13,6 +13,9 @@
 #endif
 
 Vec2 WorldToScreeen(const Vec3 inputPoint) {
+	// TODO Implement projection of 3D point onto camera
+	// There should be some nice mathsy way to do this
+	// Probably some transformation matrix
 	Vec2 point(inputPoint.x, inputPoint.y);
 	return point;
 }
