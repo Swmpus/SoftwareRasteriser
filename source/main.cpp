@@ -12,13 +12,18 @@
 #define DISPLAY_WIDTH 240
 #endif
 
+Vec2 WorldToScreeen(const Vec3 inputPoint) {
+	Vec2 point(inputPoint.x, inputPoint.y);
+	return point;
+}
+
 void renderToTarget(const Model model, RenderTarget target)
 {
 	for (int i = 0; i * 3 <= model.points.size() - 2; i += 3) {
 		// TODO These need to be projected
-		const Vec2 a = model.points[i];
-		const Vec2 b = model.points[i + 1];
-		const Vec2 c = model.points[i + 2];
+		const Vec2 a = WorldToScreeen(model.points[i]);
+		const Vec2 b = WorldToScreeen(model.points[i + 1]);
+		const Vec2 c = WorldToScreeen(model.points[i + 2]);
 
 		float minX = std::min(std::min(a.x, b.x), c.x);
 		float minY = std::min(std::min(a.y, b.y), c.y);
