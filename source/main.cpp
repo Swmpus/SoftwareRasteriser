@@ -12,21 +12,26 @@
 #define DISPLAY_WIDTH 240
 #endif
 
-Vec2 WorldToScreeen(const Vec3 inputPoint) {
-	// TODO Implement projection of 3D point onto camera
-	// There should be some nice mathsy way to do this
-	// Probably some transformation matrix
-	Vec2 point(inputPoint.x, inputPoint.y);
-	return point;
+Vec2 WorldToScreeen(const Vec3 point, const Vec2 screenPixelShape) {
+	float screenHeightToWorld = 5; // 5m screen height
+	 // Calculate a conversion factor between metres and pixels
+	float pixelsPerWorldUnit = screenPixelShape.y / screenHeightToWorld;
+
+	Vec2 pixelOffset(point.x, point.y);
+	return pixelOffset * pixelsPerWorldUnit + screenPixelShape / 2;
 }
 
-void renderToTarget(const Model model, RenderTarget target)
+void renderToTarget(const Model model, RenderTarget& target)
 {
-	for (int i = 0; i * 3 <= model.points.size() - 2; i += 3) {
-		// TODO These need to be projected
-		const Vec2 a = WorldToScreeen(model.points[i]);
-		const Vec2 b = WorldToScreeen(model.points[i + 1]);
-		const Vec2 c = WorldToScreeen(model.points[i + 2]);
+	const Vec2 screenPixelShape(
+		static_cast<float>(target.width),
+		static_cast<float>(target.height));
+
+	// This function draws to target as a side-effect, deliberately
+	for (int i = 0; i * 3 < model.points.size(); i++) {
+		const Vec2 a = WorldToScreeen(model.points[i * 3], screenPixelShape);
+		const Vec2 b = WorldToScreeen(model.points[i * 3 + 1], screenPixelShape);
+		const Vec2 c = WorldToScreeen(model.points[i * 3 + 2], screenPixelShape);
 
 		float minX = std::min(std::min(a.x, b.x), c.x);
 		float minY = std::min(std::min(a.y, b.y), c.y);
@@ -48,8 +53,6 @@ void renderToTarget(const Model model, RenderTarget target)
 			}
 		}
 	}
-	// TODO Need to find  out if the reference to target is actually used,
-	// or if I need to return the data here
 }
 
 int main()
