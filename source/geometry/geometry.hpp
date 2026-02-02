@@ -4,8 +4,9 @@
 struct Model {
 	const std::vector<Vec3> points;
 	const std::vector<Vec3> triCols;
+	const Transform transform;
 
-	Model(const std::vector<Vec3>& points, const std::vector<Vec3>& triCols) : points(points), triCols(triCols) {}
+	Model(const std::vector<Vec3>& points, const std::vector<Vec3>& triCols, const Transform transform) : points(points), triCols(triCols), transform(transform) {}
 };
 
 struct RenderTarget {

@@ -129,13 +129,13 @@ struct Transform {
 
 	Transform(float yaw) : yaw(yaw) {}
 
-	Mat33 getBasisVectors()
+	Mat33 getBasisVectors() const
 	{
 		Mat33 basisVectors(std::array<float, 9> {cos(yaw), 0.0f, sin(yaw), 0.0f, 1.0f, 0.0f, -sin(yaw), 0.0f, cos(yaw)});
 		return basisVectors;
 	}
 
-	Vec3 transformVector(Vec3 vector)
+	Vec3 transformVector(const Vec3 &vector) const
 	{
 		return getBasisVectors() * vector;
 	}

@@ -12,12 +12,14 @@
 #define DISPLAY_WIDTH 240
 #endif
 
-Vec2 WorldToScreeen(const Vec3 point, const Vec2 screenPixelShape) {
+Vec2 WorldToScreeen(const Vec3 &objectPoint, const Transform transform, const Vec2 screenPixelShape) {
+	Vec3 worldPoint = transform.transformVector(objectPoint);
+
 	float screenHeightToWorld = 5; // 5m screen height
 	 // Calculate a conversion factor between metres and pixels
 	float pixelsPerWorldUnit = screenPixelShape.y / screenHeightToWorld;
 
-	Vec2 pixelOffset(point.x, point.y);
+	Vec2 pixelOffset(worldPoint.x, worldPoint.y);
 	return pixelOffset * pixelsPerWorldUnit + screenPixelShape / 2;
 }
 
@@ -29,9 +31,9 @@ void renderToTarget(const Model model, RenderTarget& target)
 
 	// This function draws to target as a side-effect, deliberately
 	for (int i = 0; i * 3 < model.points.size(); i++) {
-		const Vec2 a = WorldToScreeen(model.points[i * 3], screenPixelShape);
-		const Vec2 b = WorldToScreeen(model.points[i * 3 + 1], screenPixelShape);
-		const Vec2 c = WorldToScreeen(model.points[i * 3 + 2], screenPixelShape);
+		const Vec2 a = WorldToScreeen(model.points[i * 3], model.transform, screenPixelShape);
+		const Vec2 b = WorldToScreeen(model.points[i * 3 + 1], model.transform, screenPixelShape);
+		const Vec2 c = WorldToScreeen(model.points[i * 3 + 2], model.transform, screenPixelShape);
 
 		float minX = std::min(std::min(a.x, b.x), c.x);
 		float minY = std::min(std::min(a.y, b.y), c.y);
@@ -71,7 +73,10 @@ int main()
 				(float) rand() / RAND_MAX,
 				(float) rand() / RAND_MAX));
 	}
-	Model cube(trianglePoints, triangleCols);
+	// TODO Need to make sure that the cos
+	// and sin functions are using radians
+	const Transform cubeTransform (45);
+	Model cube(trianglePoints, triangleCols, cubeTransform);
 
 	RenderTarget renderTarget(DISPLAY_HEIGHT, DISPLAY_WIDTH);
 
