@@ -107,7 +107,39 @@ struct Vec2 {
 	}
 };
 
+struct Mat33 {
+	// Row major
+	std::array<float, 9> m;
 
+	Mat33(std::array<float, 9> m) : m(m) {}
+	Mat33() : m(std::array<float, 9>()) {}
+
+	Vec3 operator*(const Vec3 &vector) const
+	{
+		Vec3 result = Vec3();
+		result.x = vector.x * m[0] + vector.x * m[3] + vector.x * m[6];
+		result.y = vector.y * m[1] + vector.y * m[4] + vector.y * m[7];
+		result.z = vector.z * m[2] + vector.z * m[5] + vector.z * m[8];
+    	return result;
+	}
+};
+
+struct Transform {
+	float yaw;
+
+	Transform(float yaw) : yaw(yaw) {}
+
+	Mat33 getBasisVectors()
+	{
+		Mat33 basisVectors(std::array<float, 9> {cos(yaw), 0.0f, sin(yaw), 0.0f, 1.0f, 0.0f, -sin(yaw), 0.0f, cos(yaw)});
+		return basisVectors;
+	}
+
+	Vec3 transformVector(Vec3 vector)
+	{
+		return getBasisVectors() * vector;
+	}
+};
 
 bool pointOnRightSideOfLine(const Vec2& a, const Vec2& b, const Vec2& point)
 {
@@ -122,5 +154,5 @@ bool pointInTriangle(const Vec2& a, const Vec2& b, const Vec2& c, const Vec2& po
 	bool sideAB = pointOnRightSideOfLine(a, b, point);
 	bool sideBC = pointOnRightSideOfLine(b, c, point);
 	bool sideCA = pointOnRightSideOfLine(c, a, point);
-	return sideAB == sideBC && sideBC == sideCA;
+	return sideAB && sideBC && sideCA;
 }
