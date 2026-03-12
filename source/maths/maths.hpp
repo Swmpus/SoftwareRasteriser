@@ -1,6 +1,14 @@
 #pragma once
+
 #include <array>
 #include <cmath>
+
+const double pi = 3.14159265358979323846;
+
+float degToRad(const float degrees)
+{
+	return degrees * pi/180;
+}
 
 struct Vec3 {
 	float x;
@@ -117,15 +125,15 @@ struct Mat33 {
 	Vec3 operator*(const Vec3 &vector) const
 	{
 		Vec3 result = Vec3();
-		result.x = vector.x * m[0] + vector.x * m[3] + vector.x * m[6];
-		result.y = vector.y * m[1] + vector.y * m[4] + vector.y * m[7];
-		result.z = vector.z * m[2] + vector.z * m[5] + vector.z * m[8];
+		result.x = vector.x * m[0] + vector.y * m[1] + vector.z * m[2];
+		result.y = vector.x * m[3] + vector.y * m[4] + vector.z * m[5];
+		result.z = vector.x * m[6] + vector.y * m[7] + vector.z * m[8];
     	return result;
 	}
 };
 
 struct Transform {
-	float yaw;
+	float yaw;  // Radians
 
 	Transform(float yaw) : yaw(yaw) {}
 

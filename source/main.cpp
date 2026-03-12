@@ -73,9 +73,7 @@ int main()
 				(float) rand() / RAND_MAX,
 				(float) rand() / RAND_MAX));
 	}
-	// TODO Need to make sure that the cos
-	// and sin functions are using radians
-	const Transform cubeTransform (45);
+	const Transform cubeTransform (degToRad(198));
 	Model cube(trianglePoints, triangleCols, cubeTransform);
 
 	RenderTarget renderTarget(DISPLAY_HEIGHT, DISPLAY_WIDTH);
