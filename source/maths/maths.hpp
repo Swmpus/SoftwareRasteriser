@@ -153,8 +153,9 @@ struct Transform {
 	float yaw;  // Radians
 	float pitch;  // Radians
 	float roll;  // Radians
+	Vec3 position;
 
-	Transform(float yaw, float pitch, float roll) : yaw(yaw), pitch(pitch), roll(roll) {}
+	Transform(float yaw, float pitch, float roll, Vec3 position) : yaw(yaw), pitch(pitch), roll(roll), position(position) {}
 
 	Mat33 getBasisVectors() const
 	{
@@ -178,7 +179,7 @@ struct Transform {
 
 	Vec3 transformVector(const Vec3 &vector) const
 	{
-		return getBasisVectors() * vector;
+		return getBasisVectors() * vector + position;
 	}
 };
 

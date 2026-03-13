@@ -17,7 +17,7 @@ Vec2 WorldToScreeen(const Vec3 &objectPoint, const Transform transform, const Ve
 
 	float screenHeightToWorld = 5; // 5m screen height
 	 // Calculate a conversion factor between metres and pixels
-	float pixelsPerWorldUnit = screenPixelShape.y / screenHeightToWorld;
+	float pixelsPerWorldUnit = screenPixelShape.y / screenHeightToWorld / worldPoint.z;
 
 	Vec2 pixelOffset(worldPoint.x, worldPoint.y);
 	return pixelOffset * pixelsPerWorldUnit + screenPixelShape / 2;
@@ -73,7 +73,8 @@ int main()
 				(float) rand() / RAND_MAX,
 				(float) rand() / RAND_MAX));
 	}
-	const Transform cubeTransform (degToRad(198), degToRad(267), degToRad(54));
+	Vec3 cubePos(0.0f, 0.0f, 3.0f);
+	const Transform cubeTransform (degToRad(10), degToRad(30), degToRad(60), cubePos);
 	Model cube(trianglePoints, triangleCols, cubeTransform);
 
 	RenderTarget renderTarget(DISPLAY_HEIGHT, DISPLAY_WIDTH);
