@@ -130,17 +130,36 @@ struct Mat33 {
 		result.z = vector.x * m[6] + vector.y * m[7] + vector.z * m[8];
     	return result;
 	}
+
+	Mat33 operator*(const Mat33 &matrix) const
+	{
+		std::array<float, 9> result;
+		result[0] = m[0] * matrix.m[0] + m[1] * matrix.m[3] + m[2] * matrix.m[6];
+		result[1] = m[0] * matrix.m[1] + m[1] * matrix.m[4] + m[2] * matrix.m[7];
+		result[2] = m[0] * matrix.m[2] + m[1] * matrix.m[5] + m[2] * matrix.m[8];
+
+		result[3] = m[3] * matrix.m[0] + m[4] * matrix.m[3] + m[5] * matrix.m[6];
+		result[4] = m[3] * matrix.m[1] + m[4] * matrix.m[4] + m[5] * matrix.m[7];
+		result[5] = m[3] * matrix.m[2] + m[4] * matrix.m[5] + m[5] * matrix.m[8];
+
+		result[6] = m[6] * matrix.m[0] + m[7] * matrix.m[3] + m[8] * matrix.m[6];
+		result[7] = m[6] * matrix.m[1] + m[7] * matrix.m[4] + m[8] * matrix.m[7];
+		result[8] = m[6] * matrix.m[2] + m[7] * matrix.m[5] + m[8] * matrix.m[8];
+    	return Mat33(result);
+	}
 };
 
 struct Transform {
 	float yaw;  // Radians
+	float pitch;  // Radians
 
-	Transform(float yaw) : yaw(yaw) {}
+	Transform(float yaw, float pitch) : yaw(yaw), pitch(pitch) {}
 
 	Mat33 getBasisVectors() const
 	{
-		Mat33 basisVectors(std::array<float, 9> {cos(yaw), 0.0f, sin(yaw), 0.0f, 1.0f, 0.0f, -sin(yaw), 0.0f, cos(yaw)});
-		return basisVectors;
+		Mat33 yawBasis(std::array<float, 9> {cos(yaw), 0.0f, sin(yaw), 0.0f, 1.0f, 0.0f, -sin(yaw), 0.0f, cos(yaw)});
+		Mat33 PitchBasis(std::array<float, 9> {1.0f, 0.0f, 0.0f, 0.0f, cos(pitch), sin(pitch), 0.0f, -sin(pitch), cos(pitch)});
+		return yawBasis * PitchBasis;
 	}
 
 	Vec3 transformVector(const Vec3 &vector) const
