@@ -152,14 +152,28 @@ struct Mat33 {
 struct Transform {
 	float yaw;  // Radians
 	float pitch;  // Radians
+	float roll;  // Radians
 
-	Transform(float yaw, float pitch) : yaw(yaw), pitch(pitch) {}
+	Transform(float yaw, float pitch, float roll) : yaw(yaw), pitch(pitch), roll(roll) {}
 
 	Mat33 getBasisVectors() const
 	{
-		Mat33 yawBasis(std::array<float, 9> {cos(yaw), 0.0f, sin(yaw), 0.0f, 1.0f, 0.0f, -sin(yaw), 0.0f, cos(yaw)});
-		Mat33 PitchBasis(std::array<float, 9> {1.0f, 0.0f, 0.0f, 0.0f, cos(pitch), sin(pitch), 0.0f, -sin(pitch), cos(pitch)});
-		return yawBasis * PitchBasis;
+		Mat33 yawBasis(std::array<float, 9> {
+			cos(yaw), 0.0f, sin(yaw),
+			0.0f, 1.0f, 0.0f,
+			-sin(yaw), 0.0f, cos(yaw)
+		});
+		Mat33 PitchBasis(std::array<float, 9> {
+			1.0f, 0.0f, 0.0f,
+			0.0f, cos(pitch), sin(pitch),
+			0.0f, -sin(pitch), cos(pitch)
+		});
+		Mat33 RollBasis(std::array<float, 9> {
+			cos(roll), sin(roll), 0.0f,
+			-sin(roll), cos(roll), 0.0f,
+			0.0f, 0.0f, 1.0f
+		});
+		return (yawBasis * PitchBasis) * RollBasis;
 	}
 
 	Vec3 transformVector(const Vec3 &vector) const

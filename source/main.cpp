@@ -73,7 +73,7 @@ int main()
 				(float) rand() / RAND_MAX,
 				(float) rand() / RAND_MAX));
 	}
-	const Transform cubeTransform (degToRad(198), degToRad(267));
+	const Transform cubeTransform (degToRad(198), degToRad(267), degToRad(54));
 	Model cube(trianglePoints, triangleCols, cubeTransform);
 
 	RenderTarget renderTarget(DISPLAY_HEIGHT, DISPLAY_WIDTH);
