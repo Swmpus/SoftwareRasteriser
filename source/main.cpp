@@ -1,10 +1,14 @@
 #include <string>
 #include <vector>
 #include <ctime> 
+#include <cmath>
 #include "maths.hpp"
 #include "io.hpp"
 #include "geometry.hpp"
 
+#ifndef FOV
+#define FOV 90
+#endif
 #ifndef DISPLAY_HEIGHT
 #define DISPLAY_HEIGHT 280
 #endif
@@ -15,7 +19,7 @@
 Vec2 WorldToScreeen(const Vec3 &objectPoint, const Transform transform, const Vec2 screenPixelShape) {
 	Vec3 worldPoint = transform.transformVector(objectPoint);
 
-	float screenHeightToWorld = 5; // 5m screen height
+	float screenHeightToWorld = tan(FOV / 2) * 2; // Screen height in world space
 	 // Calculate a conversion factor between metres and pixels
 	float pixelsPerWorldUnit = screenPixelShape.y / screenHeightToWorld / worldPoint.z;
 
@@ -74,7 +78,7 @@ int main()
 				(float) rand() / RAND_MAX));
 	}
 	Vec3 cubePos(0.0f, 0.0f, 3.0f);
-	const Transform cubeTransform (degToRad(10), degToRad(30), degToRad(60), cubePos);
+	const Transform cubeTransform (degToRad(40), degToRad(30), degToRad(60), cubePos);
 	Model cube(trianglePoints, triangleCols, cubeTransform);
 
 	RenderTarget renderTarget(DISPLAY_HEIGHT, DISPLAY_WIDTH);
