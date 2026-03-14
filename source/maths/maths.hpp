@@ -203,10 +203,11 @@ bool pointInTriangle(const Vec2& a, const Vec2& b, const Vec2& c, const Vec2& po
 	float areaCAP = signedTriangleArea(c, a, point);
 
 	// This factor means that the weights will sum to 1
-	float inverseAreaSum = 1 / (areaABP + areaBCP + areaCAP);
+	float areaSum = areaABP + areaBCP + areaCAP;
+	float inverseAreaSum = 1 / areaSum;
 	weights.x = areaABP * inverseAreaSum;
 	weights.y = areaBCP * inverseAreaSum;
 	weights.z = areaCAP * inverseAreaSum;
 
-	return areaABP >= 0 && areaBCP >= 0 && areaCAP >= 0;
+	return areaABP >= 0 && areaBCP >= 0 && areaCAP >= 0 && areaSum > 0;
 }
