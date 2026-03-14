@@ -13,6 +13,7 @@ struct RenderTarget {
 	const uint16_t height;
 	const uint16_t width;
 	std::vector<Vec3> image;
+	std::vector<float> depthBuffer;
 
-	RenderTarget(const uint16_t height, const uint16_t width) : height(height), width(width), image(height * width) {}
+	RenderTarget(const uint16_t height, const uint16_t width) : height(height), width(width), image(height * width), depthBuffer(height * width) {}
 };

@@ -10,63 +10,6 @@ float degToRad(const float degrees)
 	return degrees * pi/180;
 }
 
-struct Vec3 {
-	float x;
-	float y;
-	float z;
-
-	Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
-	Vec3() : x(0.0f), y(0.0f), z(0.0f) {}
-
-	float dot(const Vec3& other) const
-	{
-		return x * other.x + y * other.y + z * other.z;
-	}
-
-	Vec3 cross(const Vec3& other) const
-	{
-		return Vec3(
-			y * other.z - z * other.y,
-			z  * other.x - x * other.z,
-			x * other.y - y * other.x
-		);
-	}
-
-	Vec3 perpendicular() const
-	{
-		if (x == 0 && y == 0 && z != 0) {
-			return cross(Vec3(1.0f, 0.0f, 0.0f));
-		} else {
-			return cross(Vec3(0.0f, 0.0f, 1.0f));
-		}
-	}
-
-	float len() const
-	{
-		return std::sqrt(x * x + y * y + z * z);
-	}
-
-	Vec3 operator+(const Vec3& other) const
-	{
-		return Vec3(x + other.x, y + other.y, z + other.z);
-	}
-
-	Vec3 operator-(const Vec3& other) const
-	{
-    	return Vec3(x - other.x, y - other.y, z - other.z);
-	}
-
-	Vec3 operator*(float scalar) const
-	{
-    	return Vec3(x * scalar, y * scalar, z * scalar);
-	}
-
-	Vec3 operator/(float scalar) const
-	{
-    	return Vec3(x / scalar, y / scalar, z / scalar);
-	}
-};
-
 struct Vec2 {
 	float x;
 	float y;
@@ -112,6 +55,68 @@ struct Vec2 {
 	Vec2 operator+(float scalar) const
 	{
     	return Vec2(x + scalar, y + scalar);
+	}
+};
+
+struct Vec3 {
+	float x;
+	float y;
+	float z;
+
+	Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+	Vec3() : x(0.0f), y(0.0f), z(0.0f) {}
+
+	float dot(const Vec3& other) const
+	{
+		return x * other.x + y * other.y + z * other.z;
+	}
+
+	Vec3 cross(const Vec3& other) const
+	{
+		return Vec3(
+			y * other.z - z * other.y,
+			z  * other.x - x * other.z,
+			x * other.y - y * other.x
+		);
+	}
+
+	Vec3 perpendicular() const
+	{
+		if (x == 0 && y == 0 && z != 0) {
+			return cross(Vec3(1.0f, 0.0f, 0.0f));
+		} else {
+			return cross(Vec3(0.0f, 0.0f, 1.0f));
+		}
+	}
+
+	Vec2 asVec2() const
+	{
+		return Vec2(x, y);
+	}
+
+	float len() const
+	{
+		return std::sqrt(x * x + y * y + z * z);
+	}
+
+	Vec3 operator+(const Vec3& other) const
+	{
+		return Vec3(x + other.x, y + other.y, z + other.z);
+	}
+
+	Vec3 operator-(const Vec3& other) const
+	{
+    	return Vec3(x - other.x, y - other.y, z - other.z);
+	}
+
+	Vec3 operator*(float scalar) const
+	{
+    	return Vec3(x * scalar, y * scalar, z * scalar);
+	}
+
+	Vec3 operator/(float scalar) const
+	{
+    	return Vec3(x / scalar, y / scalar, z / scalar);
 	}
 };
 
@@ -183,18 +188,25 @@ struct Transform {
 	}
 };
 
-bool pointOnRightSideOfLine(const Vec2& a, const Vec2& b, const Vec2& point)
+float signedTriangleArea(const Vec2& a, const Vec2& b, const Vec2& c)
 {
-	Vec2 ap = point - a;
+	Vec2 ac = c - a;
 	Vec2 abPerp = (b - a).perpendicular();
-	return ap.dot(abPerp) >= 0;
+	return ac.dot(abPerp) / 2;
 }
 
 // a, b, and c are the vertices of the triangle wound in a clockwise order
-bool pointInTriangle(const Vec2& a, const Vec2& b, const Vec2& c, const Vec2& point)
+bool pointInTriangle(const Vec2& a, const Vec2& b, const Vec2& c, const Vec2& point, Vec3& weights)
 {
-	bool sideAB = pointOnRightSideOfLine(a, b, point);
-	bool sideBC = pointOnRightSideOfLine(b, c, point);
-	bool sideCA = pointOnRightSideOfLine(c, a, point);
-	return sideAB && sideBC && sideCA;
+	float areaABP = signedTriangleArea(a, b, point);
+	float areaBCP = signedTriangleArea(b, c, point);
+	float areaCAP = signedTriangleArea(c, a, point);
+
+	// This factor means that the weights will sum to 1
+	float inverseAreaSum = 1 / (areaABP + areaBCP + areaCAP);
+	weights.x = areaABP * inverseAreaSum;
+	weights.y = areaBCP * inverseAreaSum;
+	weights.z = areaCAP * inverseAreaSum;
+
+	return areaABP >= 0 && areaBCP >= 0 && areaCAP >= 0;
 }
